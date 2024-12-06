@@ -20,6 +20,7 @@ class YOLO(Model):
             self.__dict__ = new_instance.__dict__
         else:
             # Continue with default YOLO initialization
+            print(f"LIAM task in class YOLO: {task}")
             super().__init__(model=model, task=task, verbose=verbose)
 
     @property

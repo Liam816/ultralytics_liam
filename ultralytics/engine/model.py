@@ -24,7 +24,7 @@ from ultralytics.utils import (
     emojis,
     yaml_load,
 )
-
+import pdb
 
 class Model(nn.Module):
     """
@@ -123,7 +123,8 @@ class Model(nn.Module):
         self.session = None  # HUB session
         self.task = task  # task type
         model = str(model).strip()
-
+        print(f"LIAM self.task in class Model: {self.task}")
+        # pdb.set_trace()
         # Check if Ultralytics HUB model from https://hub.ultralytics.com
         if self.is_hub_model(model):
             # Fetch model from HUB
@@ -285,8 +286,10 @@ class Model(nn.Module):
         weights = checks.check_model_file_from_stem(weights)  # add suffix, i.e. yolov8n -> yolov8n.pt
 
         if Path(weights).suffix == ".pt":
-            self.model, self.ckpt = attempt_load_one_weight(weights)
+            # pdb.set_trace()
+            self.model, self.ckpt = attempt_load_one_weight(weights, device="cuda")
             self.task = self.model.args["task"]
+            print(f"LIAM self.task in _load(): {self.task}")
             self.overrides = self.model.args = self._reset_ckpt_args(self.model.args)
             self.ckpt_path = self.model.pt_path
         else:
@@ -544,8 +547,9 @@ class Model(nn.Module):
         custom = {"conf": 0.25, "batch": 1, "save": is_cli, "mode": "predict"}  # method defaults
         args = {**self.overrides, **custom, **kwargs}  # highest priority args on the right
         prompts = args.pop("prompts", None)  # for SAM-type models
-
-        if not self.predictor:
+        print(f'LIAM args: {args}')
+        # pdb.set_trace()
+        if not self.predictor:  # 默认进到这里
             self.predictor = (predictor or self._smart_load("predictor"))(overrides=args, _callbacks=self.callbacks)
             self.predictor.setup_model(model=self.model, verbose=is_cli)
         else:  # only update args if predictor is already setup
